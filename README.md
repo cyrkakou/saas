@@ -45,10 +45,15 @@ The project follows a Clean Architecture approach with the following structure:
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn/pnpm
+- Git
 
 ### Installation
 
 1. Clone the repository
+   ```bash
+   git clone https://github.com/cyrkakou/saas.git
+   cd saas
+   ```
 2. Install dependencies:
    ```bash
    npm install
@@ -70,6 +75,40 @@ The project follows a Clean Architecture approach with the following structure:
    # or
    pnpm dev
    ```
+
+### Git Setup
+
+The project is configured to use Git for version control. If you're starting from scratch:
+
+1. Initialize Git repository:
+   ```bash
+   git init
+   ```
+
+2. Add the remote repository:
+   ```bash
+   git remote add origin https://github.com/cyrkakou/saas.git
+   ```
+
+3. Add all files and make initial commit:
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   ```
+
+4. Push to the remote repository:
+   ```bash
+   git push -u origin main
+   ```
+
+#### Automated Git Scripts
+
+The project includes two scripts to automate Git operations:
+
+- `node setup-git.js`: Initializes Git, configures the remote repository, and makes an initial commit
+- `node git-commit-push.js "Your commit message"`: Commits all changes and pushes them to the remote repository
+
+These scripts automatically handle committing and pushing changes without asking for permission.
 
 ## Database Strategy Pattern
 
