@@ -1,5 +1,6 @@
 @echo off
 setlocal
+cd %~dp0
 
 if "%~1"=="" (
   echo Error: Please provide an issue number.
