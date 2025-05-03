@@ -1,17 +1,20 @@
 # NextJS SaaS Starter
 
-A modern SaaS starter kit built with NextJS, Tailwind CSS, and more, following SOLID principles and Clean Architecture.
+A modern SaaS starter kit built with NextJS, Tailwind CSS, and more, following SOLID principles and Clean Architecture. This project is designed to be a production-ready foundation for building SaaS applications with a focus on maintainability, scalability, and developer experience.
 
 ## Features
 
 - **NextJS with App Router**: Modern React framework with server components
 - **Tailwind CSS**: Utility-first CSS framework
 - **Authentication System**: Secure authentication with JWT
-- **Drizzle ORM**: Type-safe SQL query builder with SQLite (adaptable to MySQL/PostgreSQL)
+- **Drizzle ORM**: Type-safe SQL query builder with database adapter pattern
+- **Multi-Database Support**: SQLite (default), MySQL, and PostgreSQL support
 - **Zod Validation**: Runtime type checking and validation
 - **TanStack Query**: Data fetching and caching
 - **TanStack Table**: Headless UI for building powerful tables
 - **Clean Architecture**: Separation of concerns with domain-driven design
+- **Automated Git Workflow**: Streamlined version control with GitHub integration
+- **Comprehensive Documentation**: Detailed guides and code documentation
 
 ## Project Structure
 
@@ -76,39 +79,84 @@ The project follows a Clean Architecture approach with the following structure:
    pnpm dev
    ```
 
-### Git Setup
+### Git Setup and Automation
 
-The project is configured to use Git for version control. If you're starting from scratch:
+The project includes a comprehensive Git automation system that handles version control, GitHub issues, and project management.
 
-1. Initialize Git repository:
-   ```bash
-   git init
-   ```
+#### Initial Setup
 
-2. Add the remote repository:
-   ```bash
-   git remote add origin https://github.com/cyrkakou/saas.git
-   ```
+If you're starting from scratch:
 
-3. Add all files and make initial commit:
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   ```
+```bash
+# Initialize Git and set up the repository
+./git-init.bat
+```
 
-4. Push to the remote repository:
-   ```bash
-   git push -u origin main
-   ```
+This will:
+- Initialize the Git repository
+- Configure the remote repository
+- Create standard labels in GitHub
+- Set up the project structure
 
-#### Automated Git Scripts
+#### Automated Git Operations
 
-The project includes two scripts to automate Git operations:
+The project includes several scripts to automate Git operations:
 
-- `node setup-git.js`: Initializes Git, configures the remote repository, and makes an initial commit
-- `node git-commit-push.js "Your commit message"`: Commits all changes and pushes them to the remote repository
+```bash
+# Commit changes with a message
+./git-commit.bat "Your commit message"
 
-These scripts automatically handle committing and pushing changes without asking for permission.
+# Commit changes with a message and link to an issue
+./git-commit.bat "Your commit message" 123
+
+# Start working on an issue (creates branch and updates status)
+./git-work.bat 123
+
+# Complete an issue (commits, creates PR, closes issue)
+./git-complete.bat 123 "Implementation details"
+```
+
+#### Configuration
+
+All automation settings are stored in `git/config.json`. You can customize the behavior by editing this file:
+
+```json
+{
+  "automation": {
+    "issues": {
+      "updateStatus": true,
+      "addComments": true,
+      "addLabels": true,
+      "linkPullRequests": true
+    },
+    "git": {
+      "autoCommit": true,
+      "autoPush": true,
+      "createBranchForIssue": true,
+      "addIssueReferenceToCommit": true
+    }
+  }
+}
+```
+
+Set any option to `false` to disable that specific automation feature.
+
+#### GitHub Integration
+
+The automation system integrates with GitHub to:
+- Automatically update issue status based on commits
+- Add comments to issues with progress updates
+- Add labels to issues to indicate their status
+- Link pull requests to issues
+- Update milestone progress
+- Create branches for issues
+
+For full functionality, set your GitHub token as an environment variable:
+
+```bash
+# In .env file
+GITHUB_TOKEN=your_github_token
+```
 
 ## Database Strategy Pattern
 
@@ -119,6 +167,55 @@ The project uses a database adapter pattern to support multiple database engines
 - PostgreSQL (optional)
 
 This allows for easy switching between database engines without changing the application code.
+
+### Configuring the Database
+
+The database provider is configured through environment variables in the `.env` or `.env.local` file:
+
+```bash
+# Database Configuration
+# Options: sqlite, mysql, postgres
+DATABASE_PROVIDER=sqlite
+DATABASE_URL=file:./sqlite.db
+
+# MySQL/PostgreSQL Configuration (when using those providers)
+# DATABASE_HOST=localhost
+# DATABASE_PORT=3306  # 3306 for MySQL, 5432 for PostgreSQL
+# DATABASE_USERNAME=root
+# DATABASE_PASSWORD=password
+# DATABASE_NAME=saas
+# DATABASE_SSL=false
+```
+
+### Database Commands
+
+```bash
+# Generate database schema
+npm run db:generate
+
+# Generate schema for a specific database type
+npm run db:generate:sqlite
+npm run db:generate:mysql
+npm run db:generate:postgres
+
+# Push schema changes to the database
+npm run db:push
+
+# Initialize the database
+npm run db:init
+
+# Set up admin user
+npm run db:setup-admin
+```
+
+### Database Structure
+
+The database implementation follows the repository pattern:
+
+1. **Domain Interfaces**: Core repository interfaces in `core/domain/repositories`
+2. **Adapters**: Database provider adapters in `infrastructure/database/providers`
+3. **Schemas**: Database schemas for each provider in `infrastructure/database/schemas`
+4. **Repositories**: Concrete repository implementations in `infrastructure/database/repositories`
 
 ## Authentication
 
@@ -132,6 +229,68 @@ The authentication system includes:
 ## Development Roadmap
 
 See [tasks.md](./tasks.md) for the detailed development roadmap.
+
+## Project Maintenance and Best Practices
+
+### Code Organization
+
+1. **Follow Clean Architecture Principles**
+   - Keep domain logic independent of frameworks
+   - Maintain clear separation between layers
+   - Use dependency injection for external dependencies
+
+2. **Component Structure**
+   - Place UI components in the appropriate folders:
+     - `presentation/components/ui`: Reusable UI primitives
+     - `presentation/components/auth`: Authentication components
+     - `presentation/components/dashboard`: Dashboard components
+     - `presentation/components/landing`: Landing page components
+     - `presentation/components/shared`: Shared components
+
+3. **State Management**
+   - Use React Context for global state
+   - Leverage TanStack Query for server state
+   - Keep component state local when possible
+
+### Development Workflow
+
+1. **Feature Development Process**
+   - Create a GitHub issue for the feature
+   - Use `git-work.bat <issue-number>` to start working
+   - Implement the feature with tests
+   - Use `git-complete.bat <issue-number> "Implementation details"` when done
+
+2. **Code Quality**
+   - Write tests for all new features
+   - Follow the established code style
+   - Use TypeScript for type safety
+   - Document complex logic and public APIs
+
+3. **Database Changes**
+   - Update schemas for all supported database types
+   - Run migrations with `npm run db:push`
+   - Test with different database providers
+
+### Deployment
+
+1. **Environment Setup**
+   - Configure environment variables for each environment
+   - Use different database configurations for dev/staging/prod
+
+2. **Deployment Process**
+   - Build the application with `npm run build`
+   - Test the production build locally
+   - Deploy to the hosting platform
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Create an issue describing the feature or bug
+2. Fork the repository
+3. Create a branch for your feature
+4. Make your changes
+5. Submit a pull request
 
 ## License
 
