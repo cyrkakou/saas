@@ -4,19 +4,14 @@ setlocal
 if "%~1"=="" (
   echo Error: Please provide a commit message.
   echo Usage: git-commit.bat "Your commit message"
+  echo Usage with issue: git-commit.bat "Your commit message" 123
   exit /b 1
 )
 
-echo Adding all changes to Git...
-git add .
+if "%~2"=="" (
+  node git/automate.js commit --message "%~1"
+) else (
+  node git/automate.js commit --message "%~1" --issue %~2
+)
 
-echo Committing changes...
-git commit -m "%~1"
-
-echo Pushing changes to remote repository...
-git push
-
-echo.
-echo Changes have been committed and pushed successfully!
-echo Commit message: %~1
 echo.

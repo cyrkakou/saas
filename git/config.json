@@ -1,0 +1,144 @@
+{
+  "repository": {
+    "owner": "cyrkakou",
+    "name": "saas"
+  },
+  "automation": {
+    "issues": {
+      "updateStatus": true,
+      "addComments": true,
+      "addLabels": true,
+      "linkPullRequests": true
+    },
+    "milestones": {
+      "updateProgress": true,
+      "closeWhenComplete": true
+    },
+    "git": {
+      "autoCommit": true,
+      "autoPush": true,
+      "createBranchForIssue": true,
+      "addIssueReferenceToCommit": true
+    },
+    "notifications": {
+      "issueUpdates": true,
+      "milestoneUpdates": true,
+      "pullRequestUpdates": true
+    }
+  },
+  "labels": {
+    "status": [
+      {
+        "name": "status:backlog",
+        "color": "c5def5",
+        "description": "Issue is in the backlog"
+      },
+      {
+        "name": "status:in-progress",
+        "color": "fff2cc",
+        "description": "Issue is currently being worked on"
+      },
+      {
+        "name": "status:review",
+        "color": "d4c5f9",
+        "description": "Issue is under review"
+      },
+      {
+        "name": "status:done",
+        "color": "c2e0c6",
+        "description": "Issue has been completed"
+      }
+    ],
+    "priority": [
+      {
+        "name": "priority:low",
+        "color": "c2e0c6",
+        "description": "Low priority"
+      },
+      {
+        "name": "priority:medium",
+        "color": "fbca04",
+        "description": "Medium priority"
+      },
+      {
+        "name": "priority:high",
+        "color": "eb6420",
+        "description": "High priority"
+      },
+      {
+        "name": "priority:critical",
+        "color": "b60205",
+        "description": "Critical priority"
+      }
+    ],
+    "type": [
+      {
+        "name": "type:feature",
+        "color": "0075ca",
+        "description": "New feature or enhancement"
+      },
+      {
+        "name": "type:bug",
+        "color": "d73a4a",
+        "description": "Something isn't working"
+      },
+      {
+        "name": "type:documentation",
+        "color": "0075ca",
+        "description": "Documentation related"
+      },
+      {
+        "name": "type:refactor",
+        "color": "6699cc",
+        "description": "Code refactoring"
+      },
+      {
+        "name": "type:test",
+        "color": "bfe5bf",
+        "description": "Test related"
+      }
+    ]
+  },
+  "commitTypes": [
+    {
+      "type": "feat",
+      "description": "A new feature"
+    },
+    {
+      "type": "fix",
+      "description": "A bug fix"
+    },
+    {
+      "type": "docs",
+      "description": "Documentation only changes"
+    },
+    {
+      "type": "style",
+      "description": "Changes that do not affect the meaning of the code (white-space, formatting, etc)"
+    },
+    {
+      "type": "refactor",
+      "description": "A code change that neither fixes a bug nor adds a feature"
+    },
+    {
+      "type": "perf",
+      "description": "A code change that improves performance"
+    },
+    {
+      "type": "test",
+      "description": "Adding missing tests or correcting existing tests"
+    },
+    {
+      "type": "build",
+      "description": "Changes that affect the build system or external dependencies"
+    },
+    {
+      "type": "ci",
+      "description": "Changes to our CI configuration files and scripts"
+    },
+    {
+      "type": "chore",
+      "description": "Other changes that don't modify src or test files"
+    }
+  ]
+}
