@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateUserSchema } from '@/core/domain/entities/user';
-import crypto from 'crypto';
-import Database from 'better-sqlite3';
+import { getUserRepository } from '@/infrastructure/database';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,11 +8,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = CreateUserSchema.parse(body);
 
-    // Connect to the database
-    const db = new Database('sqlite.db');
+    // Get user repository
+    const userRepository = await getUserRepository();
 
     // Check if user already exists
-    const existingUser = db.prepare('SELECT * FROM users WHERE email = ?').get(validatedData.email);
+    const existingUser = await userRepository.findByEmail(validatedData.email);
     if (existingUser) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
@@ -22,27 +21,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the user
-    const now = Date.now();
-    const userId = crypto.randomUUID();
-
-    db.prepare(`
-      INSERT INTO users (id, email, name, password, role, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      userId,
-      validatedData.email,
-      validatedData.name || null,
-      validatedData.password, // In a real app, you would hash this
-      'user',
-      now,
-      now
-    );
-
-    // Get the created user
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
-
-    // Close the database connection
-    db.close();
+    const user = await userRepository.create({
+      email: validatedData.email,
+      name: validatedData.name,
+      password: validatedData.password, // In a real app, you would hash this
+      role: 'user'
+    });
 
     // Return response without password
     const { password, ...userWithoutPassword } = user;

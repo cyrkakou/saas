@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Database from 'better-sqlite3';
+import { getUserRepository } from '@/infrastructure/database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,14 +16,12 @@ export async function GET(request: NextRequest) {
     // In a real implementation, you would decode the JWT token to get the user ID
     // For this simple implementation, we'll just return the first user in the database
 
-    // Connect to the database
-    const db = new Database('sqlite.db');
+    // Get user repository
+    const userRepository = await getUserRepository();
 
-    // Get the first user
-    const user = db.prepare('SELECT id, email, name, role FROM users LIMIT 1').get();
-
-    // Close the database connection
-    db.close();
+    // Get all users and take the first one
+    const users = await userRepository.findAll();
+    const user = users.length > 0 ? users[0] : null;
 
     if (!user) {
       // If no user is found, return a mock user

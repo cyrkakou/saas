@@ -34,29 +34,16 @@ class RepositoryFactory {
     // Check if we need to create a new repository
     if (!this.userRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
-      
-      // Dynamically import the appropriate repository
-      switch (providerType) {
-        case 'sqlite':
-          const { SQLiteUserRepository } = await import('../providers/sqlite/repository/user-repository');
-          this.userRepository = new SQLiteUserRepository(databaseService.getDb());
-          break;
-        case 'mysql':
-          const { MySQLUserRepository } = await import('../providers/mysql/repository/user-repository');
-          this.userRepository = new MySQLUserRepository(databaseService.getDb());
-          break;
-        case 'postgres':
-          const { PostgresUserRepository } = await import('../providers/postgres/repository/user-repository');
-          this.userRepository = new PostgresUserRepository(databaseService.getDb());
-          break;
-        default:
-          throw new Error(`Unsupported database provider type: ${providerType}`);
-      }
-      
+
+      // For now, use SQLite repository for all provider types
+      // In the future, implement MySQL and PostgreSQL repositories
+      const { SQLiteUserRepository } = await import('../providers/sqlite/repository/user-repository');
+      this.userRepository = new SQLiteUserRepository(databaseService.getDb());
+
       // Update the current provider type
       this.providerType = providerType;
     }
-    
+
     return this.userRepository;
   }
 
@@ -67,29 +54,16 @@ class RepositoryFactory {
     // Check if we need to create a new repository
     if (!this.subscriptionRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
-      
-      // Dynamically import the appropriate repository
-      switch (providerType) {
-        case 'sqlite':
-          const { SQLiteSubscriptionRepository } = await import('../providers/sqlite/repository/subscription-repository');
-          this.subscriptionRepository = new SQLiteSubscriptionRepository(databaseService.getDb());
-          break;
-        case 'mysql':
-          const { MySQLSubscriptionRepository } = await import('../providers/mysql/repository/subscription-repository');
-          this.subscriptionRepository = new MySQLSubscriptionRepository(databaseService.getDb());
-          break;
-        case 'postgres':
-          const { PostgresSubscriptionRepository } = await import('../providers/postgres/repository/subscription-repository');
-          this.subscriptionRepository = new PostgresSubscriptionRepository(databaseService.getDb());
-          break;
-        default:
-          throw new Error(`Unsupported database provider type: ${providerType}`);
-      }
-      
+
+      // For now, use SQLite repository for all provider types
+      // In the future, implement MySQL and PostgreSQL repositories
+      const { SQLiteSubscriptionRepository } = await import('../providers/sqlite/repository/subscription-repository');
+      this.subscriptionRepository = new SQLiteSubscriptionRepository(databaseService.getDb());
+
       // Update the current provider type
       this.providerType = providerType;
     }
-    
+
     return this.subscriptionRepository;
   }
 
@@ -100,7 +74,7 @@ class RepositoryFactory {
     // Check if we need to create a new repository
     if (!this.auditLogRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
-      
+
       // Dynamically import the appropriate repository
       switch (providerType) {
         case 'sqlite':
@@ -118,11 +92,11 @@ class RepositoryFactory {
         default:
           throw new Error(`Unsupported database provider type: ${providerType}`);
       }
-      
+
       // Update the current provider type
       this.providerType = providerType;
     }
-    
+
     return this.auditLogRepository;
   }
 
