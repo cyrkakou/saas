@@ -1,3 +1,3 @@
 @echo off
 cd %~dp0
-node git/automate.js init
+node git\automate.js init

@@ -8,4 +8,4 @@ if "%~1"=="" (
   exit /b 1
 )
 
-node git/automate.js work --issue %~1
+node git\automate.js work --issue %~1

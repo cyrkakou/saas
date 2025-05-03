@@ -10,9 +10,9 @@ if "%~1"=="" (
 )
 
 if "%~2"=="" (
-  node git/automate.js commit --message "%~1"
+  node git\automate.js commit --message "%~1"
 ) else (
-  node git/automate.js commit --message "%~1" --issue %~2
+  node git\automate.js commit --message "%~1" --issue %~2
 )
 
 echo.
