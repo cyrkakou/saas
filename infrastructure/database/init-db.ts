@@ -1,4 +1,4 @@
-import { databaseService } from './database-service';
+import { databaseService } from './core/database-service';
 
 /**
  * Initialize the database

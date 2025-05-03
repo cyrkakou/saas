@@ -9,7 +9,8 @@ const databaseProvider = process.env.DATABASE_PROVIDER || 'sqlite';
 
 // Base configuration
 const baseConfig: Partial<Config> = {
-  schema: './infrastructure/database/schemas',
+  // Schema path depends on the provider
+  schema: '',
 };
 
 // Provider-specific configuration
@@ -18,41 +19,44 @@ let providerConfig: Partial<Config> = {};
 switch (databaseProvider) {
   case 'sqlite':
     providerConfig = {
-      out: './infrastructure/database/migrations/sqlite',
-      driver: 'better-sqlite',
+      schema: './infrastructure/database/providers/sqlite/sqlite-schema.ts',
+      out: './infrastructure/database/providers/sqlite/migrations',
+      driver: 'better-sqlite' as any, // Type assertion to avoid TypeScript errors
       dbCredentials: {
         url: process.env.DATABASE_URL?.replace('file:', '') || 'sqlite.db',
-      },
+      } as any, // Type assertion to avoid TypeScript errors
     };
     break;
   case 'mysql':
     providerConfig = {
-      out: './infrastructure/database/migrations/mysql',
-      driver: 'mysql2',
+      schema: './infrastructure/database/providers/mysql/mysql-schema.ts',
+      out: './infrastructure/database/providers/mysql/migrations',
+      driver: 'mysql2' as any, // Type assertion to avoid TypeScript errors
       dbCredentials: process.env.DATABASE_URL
-        ? { url: process.env.DATABASE_URL }
+        ? { url: process.env.DATABASE_URL } as any
         : {
             host: process.env.DATABASE_HOST || 'localhost',
             port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : 3306,
             user: process.env.DATABASE_USERNAME,
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
-          },
+          } as any, // Type assertion to avoid TypeScript errors
     };
     break;
   case 'postgres':
     providerConfig = {
-      out: './infrastructure/database/migrations/postgres',
-      driver: 'pg',
+      schema: './infrastructure/database/providers/postgres/postgres-schema.ts',
+      out: './infrastructure/database/providers/postgres/migrations',
+      driver: 'pg' as any, // Type assertion to avoid TypeScript errors
       dbCredentials: process.env.DATABASE_URL
-        ? { url: process.env.DATABASE_URL }
+        ? { url: process.env.DATABASE_URL } as any
         : {
             host: process.env.DATABASE_HOST || 'localhost',
             port: process.env.DATABASE_PORT ? parseInt(process.env.DATABASE_PORT, 10) : 5432,
             user: process.env.DATABASE_USERNAME,
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
-          },
+          } as any, // Type assertion to avoid TypeScript errors
     };
     break;
   default:

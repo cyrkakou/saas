@@ -1,5 +1,5 @@
 // Export database service
-export { databaseService, getDb, getSchema } from './database-service';
+export { databaseService, getDb, getSchema } from './core/database-service';
 
 // Export database initialization
 export { initializeDatabase } from './init-db';
@@ -10,17 +10,29 @@ export {
   getUserRepository,
   getSubscriptionRepository,
   getAuditLogRepository,
-} from './repositories/repository-factory';
+} from './core/repository-factory';
 
 // Export database provider interfaces
-export {
+export type {
   DatabaseProvider,
   DatabaseProviderType,
   DatabaseConfig,
-} from './providers/database-provider.interface';
+} from './core/interfaces/database-provider.interface';
 
 // Export database provider factory
 export {
   createDatabaseProvider,
   loadDatabaseConfig,
-} from './providers/database-provider-factory';
+} from './core/factory';
+
+// Export abstract database provider
+export { AbstractDatabaseProvider } from './core/abstract-database-provider';
+
+// Export SQLite provider
+export { SQLiteProvider } from './providers/sqlite/sqlite-provider';
+
+// Export MySQL provider
+export { MySQLProvider } from './providers/mysql/mysql-provider';
+
+// Export PostgreSQL provider
+export { PostgresProvider } from './providers/postgres/postgres-provider';
