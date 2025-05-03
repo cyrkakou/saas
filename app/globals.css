@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Colors */
+  --primary-50: #f0f0ff;
+  --primary-100: #e0e1ff;
+  --primary-200: #c7c8ff;
+  --primary-300: #a5a6ff;
+  --primary-400: #8183ff;
+  --primary-500: #6366f1;
+  --primary-600: #4f46e5;
+  --primary-700: #4338ca;
+  --primary-800: #3730a3;
+  --primary-900: #312e81;
+  --primary-950: #1e1b4b;
+
+  /* Secondary Colors */
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+  --secondary-950: #020617;
+
+  /* Accent Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-light: #94a3b8;
+
+  /* Background Colors */
+  --bg-light: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-muted: #f1f5f9;
+
+  /* Border Colors */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-[color:var(--primary-600)] border border-[color:var(--primary-600)] px-4 py-2 rounded-md font-medium hover:bg-[color:var(--primary-50)] transition-colors;
+  }
+
+  .btn-outline {
+    @apply bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition-colors;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[color:var(--primary-500)] focus:border-transparent;
+  }
+
+  .auth-card {
+    @apply bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full mx-auto;
+  }
+
+  .auth-form {
+    @apply space-y-4 w-full max-w-md;
+  }
+
+  .auth-sidebar {
+    @apply bg-gray-800 text-white p-8 flex flex-col justify-between;
+  }
+}
