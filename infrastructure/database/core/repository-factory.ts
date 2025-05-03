@@ -3,6 +3,8 @@ import { SubscriptionRepository } from '@/core/domain/repositories/subscription-
 import { AuditLogRepository } from '@/core/domain/repositories/audit-log-repository.interface';
 import { databaseService } from './database-service';
 import { DatabaseProviderType } from './interfaces/database-provider.interface';
+import { initializeDatabase } from '@/lib/db-init';
+import { SQLiteProvider } from '../providers/sqlite/sqlite-provider';
 
 /**
  * Repository factory
@@ -31,6 +33,9 @@ class RepositoryFactory {
    * Get the user repository
    */
   public async getUserRepository(): Promise<UserRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
     // Check if we need to create a new repository
     if (!this.userRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
@@ -38,7 +43,14 @@ class RepositoryFactory {
       // For now, use SQLite repository for all provider types
       // In the future, implement MySQL and PostgreSQL repositories
       const { SQLiteUserRepository } = await import('../providers/sqlite/repository/user-repository');
-      this.userRepository = new SQLiteUserRepository(databaseService.getDb());
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.userRepository = new SQLiteUserRepository(sqliteProvider);
 
       // Update the current provider type
       this.providerType = providerType;
@@ -51,6 +63,9 @@ class RepositoryFactory {
    * Get the subscription repository
    */
   public async getSubscriptionRepository(): Promise<SubscriptionRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
     // Check if we need to create a new repository
     if (!this.subscriptionRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
@@ -58,7 +73,14 @@ class RepositoryFactory {
       // For now, use SQLite repository for all provider types
       // In the future, implement MySQL and PostgreSQL repositories
       const { SQLiteSubscriptionRepository } = await import('../providers/sqlite/repository/subscription-repository');
-      this.subscriptionRepository = new SQLiteSubscriptionRepository(databaseService.getDb());
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.subscriptionRepository = new SQLiteSubscriptionRepository(sqliteProvider);
 
       // Update the current provider type
       this.providerType = providerType;
@@ -71,6 +93,9 @@ class RepositoryFactory {
    * Get the audit log repository
    */
   public async getAuditLogRepository(): Promise<AuditLogRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
     // Check if we need to create a new repository
     if (!this.auditLogRepository || this.providerTypeChanged()) {
       const providerType = this.getCurrentProviderType();
@@ -79,15 +104,36 @@ class RepositoryFactory {
       switch (providerType) {
         case 'sqlite':
           const { SQLiteAuditLogRepository } = await import('../providers/sqlite/repository/audit-log-repository');
-          this.auditLogRepository = new SQLiteAuditLogRepository(databaseService.getDb());
+
+          // Create a wrapper SQLiteProvider that has the required methods
+          const sqliteProvider = {
+            getDb: () => databaseService.getDb(),
+            getSchema: () => databaseService.getSchema()
+          } as SQLiteProvider;
+
+          this.auditLogRepository = new SQLiteAuditLogRepository(sqliteProvider);
           break;
         case 'mysql':
           const { MySQLAuditLogRepository } = await import('../providers/mysql/repository/audit-log-repository');
-          this.auditLogRepository = new MySQLAuditLogRepository(databaseService.getDb());
+
+          // Create a wrapper MySQLProvider that has the required methods
+          const mysqlProvider = {
+            getDb: () => databaseService.getDb(),
+            getSchema: () => databaseService.getSchema()
+          } as any; // Use appropriate type when implemented
+
+          this.auditLogRepository = new MySQLAuditLogRepository(mysqlProvider);
           break;
         case 'postgres':
           const { PostgresAuditLogRepository } = await import('../providers/postgres/repository/audit-log-repository');
-          this.auditLogRepository = new PostgresAuditLogRepository(databaseService.getDb());
+
+          // Create a wrapper PostgresProvider that has the required methods
+          const postgresProvider = {
+            getDb: () => databaseService.getDb(),
+            getSchema: () => databaseService.getSchema()
+          } as any; // Use appropriate type when implemented
+
+          this.auditLogRepository = new PostgresAuditLogRepository(postgresProvider);
           break;
         default:
           throw new Error(`Unsupported database provider type: ${providerType}`);

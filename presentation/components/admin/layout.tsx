@@ -26,7 +26,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
     checkScreenSize()
     window.addEventListener('resize', checkScreenSize)
-    
+
     return () => {
       window.removeEventListener('resize', checkScreenSize)
     }
@@ -41,31 +41,38 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      {sidebarVisible && (
-        <div className={isMobile ? "fixed inset-0 z-40 lg:hidden" : ""}>
-          {isMobile && (
-            <div 
-              className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity" 
-              onClick={toggleSidebar}
-            ></div>
-          )}
-          <div className={`${isMobile ? "fixed inset-y-0 left-0 z-40 w-64" : ""}`}>
-            <Sidebar 
-              collapsed={!isMobile && sidebarCollapsed} 
-              onToggle={toggleSidebar} 
-            />
-          </div>
-        </div>
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      {/* Mobile sidebar backdrop */}
+      {isMobile && sidebarVisible && (
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity z-20"
+          onClick={toggleSidebar}
+        ></div>
       )}
-      
-      <div className={`flex flex-col flex-1 transition-all duration-300 ${
-        sidebarVisible && !isMobile 
-          ? (sidebarCollapsed ? "ml-16" : "ml-64") 
-          : "ml-0"
-      }`}>
+
+      {/* Sidebar */}
+      <div
+        className={`
+          ${isMobile ? 'fixed inset-y-0 left-0 z-30' : 'relative'}
+          ${sidebarVisible ? 'block' : isMobile ? 'hidden' : 'block'}
+          transition-all duration-300 ease-in-out
+        `}
+      >
+        <Sidebar
+          collapsed={!isMobile && sidebarCollapsed}
+          onToggle={toggleSidebar}
+        />
+      </div>
+
+      {/* Main content */}
+      <div
+        className={`
+          flex flex-col flex-1 transition-all duration-300 ease-in-out
+          ${sidebarVisible && !isMobile ? (sidebarCollapsed ? 'ml-16' : 'ml-64') : 'ml-0'}
+        `}
+      >
         <Navbar onMenuToggle={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900">
           {children}
         </main>
       </div>

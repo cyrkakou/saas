@@ -4,50 +4,52 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/pre
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <p className="text-gray-500">Welcome to your dashboard.</p>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+        <p className="text-sm sm:text-base text-gray-500">Welcome to your dashboard.</p>
+      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-4 sm:px-6">
             <CardTitle>Total Users</CardTitle>
             <CardDescription>Number of registered users</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <div className="text-4xl font-bold">1,234</div>
             <p className="text-sm text-green-500">+12% from last month</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-4 sm:px-6">
             <CardTitle>Active Subscriptions</CardTitle>
             <CardDescription>Current active subscriptions</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <div className="text-4xl font-bold">789</div>
             <p className="text-sm text-green-500">+5% from last month</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-4 sm:px-6">
             <CardTitle>Revenue</CardTitle>
             <CardDescription>Total revenue this month</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <div className="text-4xl font-bold">$12,345</div>
             <p className="text-sm text-green-500">+8% from last month</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
         <Card>
-          <CardHeader>
+          <CardHeader className="px-4 sm:px-6">
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Your recent actions</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <div className="rounded-full bg-primary-100 p-2 text-primary-600">
@@ -114,11 +116,11 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
+          <CardHeader className="px-4 sm:px-6">
             <CardTitle>Upcoming Tasks</CardTitle>
             <CardDescription>Your scheduled tasks</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <div className="space-y-4">
               <div className="flex items-start space-x-4">
                 <div className="mt-1 h-5 w-5 rounded border border-gray-300"></div>

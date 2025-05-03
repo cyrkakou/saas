@@ -1,146 +1,153 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/presentation/providers/auth-provider";
+import { DashboardSidebar } from "@/presentation/components/dashboard/sidebar";
+import { Bell, Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/presentation/components/ui/button";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+
+  useEffect(() => {
+    // Check if we're on a mobile device
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 768;
+      const tablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+      setIsMobile(mobile);
+
+      // Auto-collapse sidebar on tablet, hide on mobile
+      if (mobile) {
+        setSidebarVisible(false);
+      } else if (tablet) {
+        setSidebarCollapsed(true);
+        setSidebarVisible(true);
+      } else {
+        setSidebarVisible(true);
+      }
+    };
+
+    // Initial check
+    checkScreenSize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const toggleSidebar = () => {
+    if (isMobile) {
+      // On mobile, toggle visibility
+      setSidebarVisible(!sidebarVisible);
+    } else {
+      // On desktop/tablet, toggle collapsed state
+      setSidebarCollapsed(!sidebarCollapsed);
+      // Store the preference in localStorage for persistence
+      try {
+        localStorage.setItem('sidebarCollapsed', String(!sidebarCollapsed));
+      } catch (error) {
+        // Handle localStorage not being available
+        console.warn('Could not save to localStorage:', error);
+      }
+    }
+  };
+
+  // Function to close the sidebar (for mobile overlay clicks)
+  const closeSidebar = () => {
+    if (isMobile) {
+      setSidebarVisible(false);
+    }
+  };
+
+  // Load sidebar state from localStorage on initial render
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      if (savedState !== null) {
+        setSidebarCollapsed(savedState === 'true');
+      }
+    } catch (error) {
+      // Handle localStorage not being available (e.g., during SSR)
+      console.warn('Could not access localStorage:', error);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex min-h-screen">
+        {/* Mobile overlay */}
+        {isMobile && sidebarVisible && (
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 transition-opacity"
+            onClick={closeSidebar}
+            aria-hidden="true"
+          />
+        )}
+
         {/* Sidebar */}
-        <aside className="fixed inset-y-0 left-0 z-10 w-64 bg-white shadow-md">
-          <div className="flex h-16 items-center border-b px-6">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-primary-600">SaaS App</span>
-            </Link>
+        <div className={cn(
+          "fixed inset-y-0 left-0 z-30 transition-all duration-300",
+          isMobile && !sidebarVisible ? "-translate-x-full" : "translate-x-0"
+        )}>
+          <DashboardSidebar
+            collapsed={!isMobile && sidebarCollapsed}
+            onToggle={toggleSidebar}
+            isMobile={isMobile}
+          />
+        </div>
+
+        {/* Mobile header with menu button (only visible on mobile) */}
+        {isMobile && (
+          <div className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center px-4 z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="text-gray-500 hover:text-gray-700 mr-4"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <span className="text-lg font-medium text-gray-900">Dashboard</span>
           </div>
-          <nav className="p-4">
-            <ul className="space-y-1">
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                  </svg>
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/profile"
-                  className="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/settings"
-                  className="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Settings
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/subscription"
-                  className="flex items-center rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Subscription
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </aside>
+        )}
 
         {/* Main content */}
-        <div className="ml-64 flex flex-1 flex-col">
+        <div className={cn(
+          "flex flex-1 flex-col transition-all duration-300",
+          isMobile ? "ml-0 mt-16" : (sidebarCollapsed ? "ml-16" : "ml-64")
+        )}>
           {/* Header */}
-          <header className="flex h-16 items-center justify-between border-b bg-white px-6">
+          {/* Desktop/Tablet header (hidden on mobile) */}
+          <header className={cn(
+            "flex h-16 items-center justify-between border-b bg-white px-6",
+            isMobile ? "hidden" : "flex"
+          )}>
             <h1 className="text-lg font-medium">Dashboard</h1>
             <div className="flex items-center space-x-4">
-              <button className="rounded-md bg-gray-100 p-2 text-gray-700 hover:bg-gray-200">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                </svg>
+              <button className="relative rounded-md bg-gray-100 p-2 text-gray-700 hover:bg-gray-200">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
               </button>
               <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium">{user?.name || 'User'}</span>
-                <button
-                  onClick={() => logout()}
-                  className="flex items-center space-x-2 rounded-md bg-gray-100 px-3 py-2 text-gray-700 hover:bg-gray-200"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span>Logout</span>
-                </button>
+                <span className="hidden md:inline text-sm font-medium">{user?.name || 'User'}</span>
+                <div className="h-8 w-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center">
+                  <span className="font-medium text-sm">{user?.name?.[0] || 'U'}</span>
+                </div>
               </div>
             </div>
           </header>
 
           {/* Page content */}
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-4 md:p-6">{children}</main>
         </div>
       </div>
     </div>

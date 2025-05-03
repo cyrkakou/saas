@@ -27,10 +27,9 @@ export function ReportCard({
   }
 
   return (
-    <div 
+    <div
       className={cn(
-        "flex flex-col items-center justify-center p-6 border border-dashed rounded-lg cursor-pointer transition-all hover:border-solid",
-        "border-gray-300 dark:border-gray-700 hover:shadow-sm",
+        "flex flex-col items-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer transition-all hover:shadow-md",
         onClick ? "hover:bg-gray-50 dark:hover:bg-gray-800/50" : ""
       )}
       onClick={onClick}
@@ -40,6 +39,9 @@ export function ReportCard({
       </div>
       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{title}</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">{description}</p>
+      <div className="mt-3 text-xs text-primary-600 dark:text-primary-400">
+        Tap to explore
+      </div>
     </div>
   )
 }
