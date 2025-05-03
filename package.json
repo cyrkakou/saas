@@ -15,7 +15,8 @@
     "db:studio": "drizzle-kit studio",
     "db:init": "ts-node infrastructure/database/init-db.ts",
     "db:setup-admin": "node scripts/setup-admin.js",
-    "db:initialize": "node scripts/init-database.js"
+    "db:initialize": "node scripts/init-database.js",
+    "db:migrate-admin": "node scripts/migrate-admin-tables.js"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.0",

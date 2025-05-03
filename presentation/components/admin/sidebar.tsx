@@ -13,8 +13,12 @@ import {
   FileText,
   Image,
   MessageSquare,
-  Rss
+  Rss,
+  Shield,
+  Building,
+  LogOut
 } from 'lucide-react'
+import { useAuth } from '@/presentation/providers/auth-provider'
 import { cn } from '@/lib/utils'
 import { Button } from '@/presentation/components/ui/button'
 
@@ -25,6 +29,7 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   const mainNavItems = [
     {
@@ -36,6 +41,21 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       title: 'Users',
       href: '/admin/users',
       icon: Users,
+    },
+    {
+      title: 'Roles',
+      href: '/admin/roles',
+      icon: Shield,
+    },
+    {
+      title: 'Permissions',
+      href: '/admin/permissions',
+      icon: Shield,
+    },
+    {
+      title: 'Organizations',
+      href: '/admin/organizations',
+      icon: Building,
     },
     {
       title: 'Subscriptions',
@@ -80,7 +100,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     },
     {
       title: 'Reports',
-      href: '/admin/analytics/reports',
+      href: '/admin/reports',
       icon: FileText,
     },
   ]
@@ -192,6 +212,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             </ul>
           </div>
         </nav>
+      </div>
+
+      {/* Sign out button at the bottom */}
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
+        <button
+          onClick={() => logout()}
+          className={cn(
+            "flex items-center py-2 px-3 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-600 dark:hover:text-primary-400 w-full",
+            collapsed ? "justify-center" : ""
+          )}
+        >
+          <LogOut className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
       </div>
     </div>
   )

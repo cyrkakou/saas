@@ -7,6 +7,9 @@ A modern SaaS starter kit built with NextJS, Tailwind CSS, and more, following S
 - **NextJS with App Router**: Modern React framework with server components
 - **Tailwind CSS**: Utility-first CSS framework
 - **Authentication System**: Secure authentication with JWT
+- **Admin Management System**: Complete admin panel for managing users, roles, permissions, organizations, and more
+- **RESTful API**: Versioned API with comprehensive endpoints for all resources
+- **Role-Based Access Control**: Fine-grained permissions system
 - **Drizzle ORM**: Type-safe SQL query builder with database adapter pattern
 - **Multi-Database Support**: SQLite (default), MySQL, and PostgreSQL support
 - **Zod Validation**: Runtime type checking and validation
@@ -24,10 +27,14 @@ The project follows a Clean Architecture approach with the following structure:
 ├── app/                    # Next.js App Router
 │   ├── (auth)/             # Authentication routes
 │   ├── (dashboard)/        # Protected dashboard routes
+│   ├── admin/              # Admin management routes
 │   ├── api/                # API routes
+│   │   └── v1/             # Versioned API endpoints
 │   └── page.tsx            # Homepage
 ├── core/                   # Core business logic (framework agnostic)
 │   ├── domain/             # Domain entities and business rules
+│   │   ├── entities/       # Domain entities (User, Role, Permission, etc.)
+│   │   └── repositories/   # Repository interfaces
 │   ├── use-cases/          # Application use cases
 │   └── interfaces/         # Ports for external adapters
 ├── infrastructure/         # External implementations (adapters)
@@ -206,6 +213,9 @@ npm run db:init
 
 # Set up admin user
 npm run db:setup-admin
+
+# Initialize admin tables (roles, permissions, etc.)
+npm run db:migrate-admin
 ```
 
 ### Database Structure
@@ -224,7 +234,53 @@ The authentication system includes:
 - User registration and login
 - JWT-based authentication
 - Protected routes
-- Role-based access control
+- Role-based access control with fine-grained permissions
+- Organization-based access control
+
+## Admin Management System
+
+The admin management system provides a comprehensive interface for managing all aspects of the application:
+
+- **User Management**: Create, update, and delete users
+- **Role Management**: Define roles with specific permissions
+- **Permission Management**: Create and assign granular permissions
+- **Organization Management**: Manage organizations and their members
+- **Report Management**: Create and view reports with various filters
+- **Settings Management**: Configure application settings
+
+## API Structure
+
+The API follows RESTful principles with versioning to ensure backward compatibility:
+
+```
+/api/v{version}/{resource}/{id?}/{sub-resource?}
+```
+
+### Core Resources
+
+- `/api/v1/users` - User management
+- `/api/v1/roles` - Role management
+- `/api/v1/permissions` - Permission management
+- `/api/v1/organizations` - Organization management
+- `/api/v1/reports` - Report management
+- `/api/v1/settings` - Settings management
+- `/api/v1/subscriptions` - Subscription management
+
+### Nested Resources
+
+- `/api/v1/roles/{id}/permissions` - Permissions for a specific role
+- `/api/v1/users/{id}/roles` - Roles for a specific user
+- `/api/v1/organizations/{id}/users` - Users in a specific organization
+- `/api/v1/organizations/{id}/reports` - Reports for a specific organization
+- `/api/v1/users/{id}/reports` - Reports created by a specific user
+
+### Query Parameters
+
+- `limit` and `offset` - For pagination
+- `sort` and `order` - For sorting results
+- Resource-specific filters (e.g., `type`, `status`)
+
+All API endpoints use standard HTTP methods (GET, POST, PUT, DELETE) and return appropriate status codes.
 
 ## Development Roadmap
 

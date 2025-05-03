@@ -1,6 +1,11 @@
 import { UserRepository } from '@/core/domain/repositories/user-repository.interface';
 import { SubscriptionRepository } from '@/core/domain/repositories/subscription-repository.interface';
 import { AuditLogRepository } from '@/core/domain/repositories/audit-log-repository.interface';
+import { RoleRepository } from '@/core/domain/repositories/role-repository.interface';
+import { PermissionRepository } from '@/core/domain/repositories/permission-repository.interface';
+import { OrganizationRepository } from '@/core/domain/repositories/organization-repository.interface';
+import { SettingRepository } from '@/core/domain/repositories/setting-repository.interface';
+import { ReportRepository } from '@/core/domain/repositories/report-repository.interface';
 import { databaseService } from './database-service';
 import { DatabaseProviderType } from './interfaces/database-provider.interface';
 import { initializeDatabase } from '@/lib/db-init';
@@ -15,6 +20,11 @@ class RepositoryFactory {
   private userRepository: UserRepository | null = null;
   private subscriptionRepository: SubscriptionRepository | null = null;
   private auditLogRepository: AuditLogRepository | null = null;
+  private roleRepository: RoleRepository | null = null;
+  private permissionRepository: PermissionRepository | null = null;
+  private organizationRepository: OrganizationRepository | null = null;
+  private settingRepository: SettingRepository | null = null;
+  private reportRepository: ReportRepository | null = null;
   private providerType: DatabaseProviderType | null = null;
 
   private constructor() {}
@@ -147,6 +157,151 @@ class RepositoryFactory {
   }
 
   /**
+   * Get the role repository
+   */
+  public async getRoleRepository(): Promise<RoleRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
+    // Check if we need to create a new repository
+    if (!this.roleRepository || this.providerTypeChanged()) {
+      const providerType = this.getCurrentProviderType();
+
+      // For now, use SQLite repository for all provider types
+      const { SQLiteRoleRepository } = await import('../providers/sqlite/repository/role-repository');
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.roleRepository = new SQLiteRoleRepository(sqliteProvider);
+
+      // Update the current provider type
+      this.providerType = providerType;
+    }
+
+    return this.roleRepository;
+  }
+
+  /**
+   * Get the permission repository
+   */
+  public async getPermissionRepository(): Promise<PermissionRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
+    // Check if we need to create a new repository
+    if (!this.permissionRepository || this.providerTypeChanged()) {
+      const providerType = this.getCurrentProviderType();
+
+      // For now, use SQLite repository for all provider types
+      const { SQLitePermissionRepository } = await import('../providers/sqlite/repository/permission-repository');
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.permissionRepository = new SQLitePermissionRepository(sqliteProvider);
+
+      // Update the current provider type
+      this.providerType = providerType;
+    }
+
+    return this.permissionRepository;
+  }
+
+  /**
+   * Get the organization repository
+   */
+  public async getOrganizationRepository(): Promise<OrganizationRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
+    // Check if we need to create a new repository
+    if (!this.organizationRepository || this.providerTypeChanged()) {
+      const providerType = this.getCurrentProviderType();
+
+      // For now, use SQLite repository for all provider types
+      const { SQLiteOrganizationRepository } = await import('../providers/sqlite/repository/organization-repository');
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.organizationRepository = new SQLiteOrganizationRepository(sqliteProvider);
+
+      // Update the current provider type
+      this.providerType = providerType;
+    }
+
+    return this.organizationRepository;
+  }
+
+  /**
+   * Get the setting repository
+   */
+  public async getSettingRepository(): Promise<SettingRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
+    // Check if we need to create a new repository
+    if (!this.settingRepository || this.providerTypeChanged()) {
+      const providerType = this.getCurrentProviderType();
+
+      // For now, use SQLite repository for all provider types
+      const { SQLiteSettingRepository } = await import('../providers/sqlite/repository/setting-repository');
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.settingRepository = new SQLiteSettingRepository(sqliteProvider);
+
+      // Update the current provider type
+      this.providerType = providerType;
+    }
+
+    return this.settingRepository;
+  }
+
+  /**
+   * Get the report repository
+   */
+  public async getReportRepository(): Promise<ReportRepository> {
+    // Ensure database is initialized before accessing it
+    await initializeDatabase();
+
+    // Check if we need to create a new repository
+    if (!this.reportRepository || this.providerTypeChanged()) {
+      const providerType = this.getCurrentProviderType();
+
+      // For now, use SQLite repository for all provider types
+      const { SQLiteReportRepository } = await import('../providers/sqlite/repository/report-repository');
+
+      // Create a wrapper SQLiteProvider that has the required methods
+      const sqliteProvider = {
+        getDb: () => databaseService.getDb(),
+        getSchema: () => databaseService.getSchema()
+      } as SQLiteProvider;
+
+      this.reportRepository = new SQLiteReportRepository(sqliteProvider);
+
+      // Update the current provider type
+      this.providerType = providerType;
+    }
+
+    return this.reportRepository;
+  }
+
+  /**
    * Check if the provider type has changed
    */
   private providerTypeChanged(): boolean {
@@ -168,6 +323,11 @@ class RepositoryFactory {
     this.userRepository = null;
     this.subscriptionRepository = null;
     this.auditLogRepository = null;
+    this.roleRepository = null;
+    this.permissionRepository = null;
+    this.organizationRepository = null;
+    this.settingRepository = null;
+    this.reportRepository = null;
     this.providerType = null;
   }
 }
@@ -186,4 +346,24 @@ export async function getSubscriptionRepository(): Promise<SubscriptionRepositor
 
 export async function getAuditLogRepository(): Promise<AuditLogRepository> {
   return await repositoryFactory.getAuditLogRepository();
+}
+
+export async function getRoleRepository(): Promise<RoleRepository> {
+  return await repositoryFactory.getRoleRepository();
+}
+
+export async function getPermissionRepository(): Promise<PermissionRepository> {
+  return await repositoryFactory.getPermissionRepository();
+}
+
+export async function getOrganizationRepository(): Promise<OrganizationRepository> {
+  return await repositoryFactory.getOrganizationRepository();
+}
+
+export async function getSettingRepository(): Promise<SettingRepository> {
+  return await repositoryFactory.getSettingRepository();
+}
+
+export async function getReportRepository(): Promise<ReportRepository> {
+  return await repositoryFactory.getReportRepository();
 }

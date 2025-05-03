@@ -6,7 +6,10 @@ export const UserSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
   password: z.string().min(8),
-  role: z.enum(['user', 'admin']).default('user'),
+  roleId: z.string().optional(),
+  organizationId: z.string().optional(),
+  isActive: z.boolean().default(true),
+  lastLogin: z.date().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -15,19 +18,19 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 // Create user input schema
-export const CreateUserSchema = UserSchema.omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const CreateUserSchema = UserSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
 });
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 
 // Update user input schema
-export const UpdateUserSchema = UserSchema.partial().omit({ 
-  id: true, 
-  createdAt: true, 
-  updatedAt: true 
+export const UpdateUserSchema = UserSchema.partial().omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
 });
 
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
