@@ -20,11 +20,12 @@ import { Button } from '@/presentation/components/ui/button'
 import { useAuth } from '@/presentation/providers/auth-provider'
 
 interface SidebarProps {
-  collapsed?: boolean
-  onToggle?: () => void
+  collapsed: boolean
+  onToggle: () => void
+  isMobile?: boolean
 }
 
-export function DashboardSidebar({ collapsed = false, onToggle, isMobile }: SidebarProps & { isMobile?: boolean }) {
+export function DashboardSidebar({ collapsed = false, onToggle, isMobile = false }: SidebarProps) {
   const pathname = usePathname()
   const { logout } = useAuth()
 

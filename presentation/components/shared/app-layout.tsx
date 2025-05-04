@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect, ReactNode } from 'react'
 import { useAuth } from '@/presentation/providers/auth-provider'
 import { Bell, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -102,7 +102,7 @@ export function AppLayout({ children, sidebar, title = 'Dashboard' }: AppLayoutP
           isMobile && !sidebarVisible ? "-translate-x-full" : "translate-x-0"
         )}>
           {/* Pass the collapsed state to the sidebar component */}
-          {React.cloneElement(sidebar as React.ReactElement, { 
+          {React.cloneElement(sidebar as React.ReactElement, {
             collapsed: !isMobile && sidebarCollapsed,
             onToggle: toggleSidebar,
             isMobile
