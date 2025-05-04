@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
           id: '1',
           name: 'John Doe',
           email: 'john@example.com',
-          role: 'user',
+          roleId: '1', // Regular user role
         };
         return NextResponse.json(mockUser);
       }
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         id: '1',
         name: 'John Doe',
         email: 'john@example.com',
-        role: 'user',
+        roleId: '1', // Regular user role
       };
       return NextResponse.json(mockUser);
     }

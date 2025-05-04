@@ -7,7 +7,8 @@ import {
   Clock,
   Plus
 } from 'lucide-react'
-import { AdminLayout } from '@/presentation/components/admin/layout'
+import { AppLayout } from '@/presentation/components/shared/app-layout'
+import { Sidebar } from '@/presentation/components/admin/sidebar'
 import { ReportCard } from '@/presentation/components/admin/dashboard/report-card'
 import { CustomReportBuilder } from '@/presentation/components/admin/dashboard/custom-report-builder'
 import {
@@ -28,7 +29,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <AdminLayout>
+    <AppLayout sidebar={<Sidebar collapsed={false} onToggle={() => {}} />} title="Admin Dashboard">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Your Reports</h1>
 
@@ -84,6 +85,6 @@ export default function AdminDashboardPage() {
           />
         </DialogContent>
       </Dialog>
-    </AdminLayout>
+    </AppLayout>
   )
 }

@@ -25,9 +25,10 @@ import { Button } from '@/presentation/components/ui/button'
 interface SidebarProps {
   collapsed: boolean
   onToggle: () => void
+  isMobile?: boolean
 }
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, isMobile = false }: SidebarProps) {
   const pathname = usePathname()
   const { logout } = useAuth()
 

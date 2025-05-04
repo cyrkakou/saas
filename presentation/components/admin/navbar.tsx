@@ -6,8 +6,10 @@ import {
   Bell,
   Settings,
   Menu,
-  PenSquare
+  PenSquare,
+  LogOut
 } from 'lucide-react'
+import { useAuth } from '@/presentation/providers/auth-provider'
 import { ThemeToggle } from '@/presentation/components/ui/theme-toggle'
 import { Button } from '@/presentation/components/ui/button'
 import {
@@ -26,6 +28,7 @@ interface NavbarProps {
 
 export function Navbar({ onMenuToggle }: NavbarProps) {
   const [activeTab, setActiveTab] = useState('content')
+  const { logout } = useAuth()
 
   const tabs = [
     { id: 'content', label: 'Content' },
@@ -98,7 +101,13 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
             <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Settings</DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Billing</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">Log out</DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={logout}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Log out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

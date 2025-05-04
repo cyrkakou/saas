@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Define protected routes that require authentication
-  const isProtectedRoute = pathname.startsWith('/dashboard');
+  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
 
   // Define auth routes (login, register)
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
@@ -37,6 +37,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/admin/:path*',
     '/login',
     '/register',
   ],

@@ -8,7 +8,8 @@ type User = {
   id: string;
   name: string | null;
   email: string;
-  role: "user" | "admin";
+  roleId: string;
+  roleName?: string;
 };
 
 // Define the AuthContext type
@@ -35,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         // In a real app, you would verify the session/token with your backend
         const response = await fetch("/api/auth/me");
-        
+
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Login function
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    
+
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -73,11 +74,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const userData = await response.json();
       setUser(userData);
-      
+
       // Set a cookie to simulate authentication
       document.cookie = "auth-token=true; path=/; max-age=86400";
-      
-      router.push("/dashboard");
+
+      // Redirect based on role
+      if (userData.roleName === 'admin' || userData.roleId === '2') {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -89,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Register function
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
-    
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -116,16 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Logout function
   const logout = async () => {
     setIsLoading(true);
-    
+
     try {
       // In a real app, you would call your backend to invalidate the session
       await fetch("/api/auth/logout", {
         method: "POST",
       });
-      
+
       // Remove the auth cookie
       document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      
+
       setUser(null);
       router.push("/login");
     } catch (error) {
@@ -145,10 +151,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 // Create a hook to use the AuthContext
 export function useAuth() {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-  
+
   return context;
 }

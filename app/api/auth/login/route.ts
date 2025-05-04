@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { AuditAction, EntityType } from '@/core/domain/entities/audit-log';
-import { getUserRepository, getAuditLogRepository } from '@/infrastructure/database';
+import { getUserRepository, getAuditLogRepository, getRoleRepository } from '@/infrastructure/database';
 
 // Login input validation schema
 const LoginSchema = z.object({
@@ -71,12 +71,17 @@ export async function POST(request: NextRequest) {
       ipAddress
     });
 
+    // Get the role information
+    const roleRepository = await getRoleRepository();
+    const role = await roleRepository.findById(user.roleId);
+
     // Set a cookie to simulate authentication
     const response = NextResponse.json({
       id: user.id,
       email: user.email,
       name: user.name,
-      roleId: user.roleId
+      roleId: user.roleId,
+      roleName: role?.name || 'user'
     });
 
     response.cookies.set('auth-token', 'true', {
