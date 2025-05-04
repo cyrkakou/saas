@@ -11,6 +11,7 @@ const databaseProvider = process.env.DATABASE_PROVIDER || 'sqlite';
 const baseConfig: Partial<Config> = {
   // Schema path depends on the provider
   schema: '',
+  dialect: 'sqlite',
 };
 
 // Provider-specific configuration
@@ -21,10 +22,10 @@ switch (databaseProvider) {
     providerConfig = {
       schema: './infrastructure/database/providers/sqlite/sqlite-schema.ts',
       out: './infrastructure/database/providers/sqlite/migrations',
-      driver: 'better-sqlite' as any, // Type assertion to avoid TypeScript errors
+      driver: 'better-sqlite3',
       dbCredentials: {
         url: process.env.DATABASE_URL?.replace('file:', '') || 'sqlite.db',
-      } as any, // Type assertion to avoid TypeScript errors
+      },
     };
     break;
   case 'mysql':

@@ -74,7 +74,7 @@ export function Navbar({ onMenuToggle }: NavbarProps) {
         <ThemeToggle />
 
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           className="hidden md:flex items-center bg-primary-600 hover:bg-primary-700 text-white"
         >

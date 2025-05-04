@@ -1,5 +1,5 @@
 import { initializeDatabase } from '@/infrastructure/database';
-import { getUserRepository } from '@/infrastructure/database/repositories/repository-factory';
+import { getUserRepository } from '@/infrastructure/database';
 import { createId } from '@paralleldrive/cuid2';
 import * as crypto from 'crypto';
 
@@ -9,11 +9,11 @@ async function setupAdmin() {
     await initializeDatabase();
 
     // Get the user repository
-    const userRepository = getUserRepository();
+    const userRepository = await getUserRepository();
 
     // Check if admin user already exists
     const existingAdmin = await userRepository.findByEmail('admin@example.com');
-    
+
     if (existingAdmin) {
       console.log('Admin user already exists');
       return;
@@ -27,11 +27,11 @@ async function setupAdmin() {
       .toString('hex');
 
     await userRepository.create({
-      id: createId(),
       email: 'admin@example.com',
       name: 'Admin User',
       password: `${salt}:${hash}`,
-      role: 'admin',
+      roleId: '2', // Assuming '2' is the ID for the 'admin' role
+      isActive: true
     });
 
     console.log('Admin user created successfully');

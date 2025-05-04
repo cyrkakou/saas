@@ -72,12 +72,31 @@ The project follows a Clean Architecture approach with the following structure:
    # or
    pnpm install
    ```
-3. Set up the database:
-   ```bash
-   npm run db:generate
-   npm run db:push
+3. Create a `.env.local` file in the root directory with the following content:
    ```
-4. Start the development server:
+   # Application
+   NODE_ENV=development
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+   # Authentication
+   JWT_SECRET=your-secret-key-here
+   JWT_EXPIRES_IN=7d
+   NEXTAUTH_URL=http://localhost:3000
+
+   # Database Configuration
+   # Options: sqlite, mysql, postgres
+   DATABASE_PROVIDER=sqlite
+   DATABASE_URL=file:./sqlite.db
+   ```
+4. Set up the database:
+   ```bash
+   # Create database tables
+   node scripts/create-tables.js
+
+   # Create admin user
+   node scripts/create-admin.js
+   ```
+5. Start the development server:
    ```bash
    npm run dev
    # or
@@ -85,6 +104,14 @@ The project follows a Clean Architecture approach with the following structure:
    # or
    pnpm dev
    ```
+6. Access the application at http://localhost:3000
+
+### Default Admin Credentials
+
+After running the setup scripts, you can log in with the following credentials:
+
+- Email: admin@example.com
+- Password: admin123
 
 ### Git Setup and Automation
 
@@ -197,25 +224,17 @@ DATABASE_URL=file:./sqlite.db
 ### Database Commands
 
 ```bash
-# Generate database schema
-npm run db:generate
+# Create database tables
+node scripts/create-tables.js
 
-# Generate schema for a specific database type
-npm run db:generate:sqlite
-npm run db:generate:mysql
-npm run db:generate:postgres
+# Create admin user
+node scripts/create-admin.js
 
-# Push schema changes to the database
-npm run db:push
+# Fix database schema to match application model
+node scripts/migrate-database.js
 
-# Initialize the database
-npm run db:init
-
-# Set up admin user
-npm run db:setup-admin
-
-# Initialize admin tables (roles, permissions, etc.)
-npm run db:migrate-admin
+# Add missing columns to audit_logs table
+node scripts/fix-audit-logs.js
 ```
 
 ### Database Structure
@@ -236,6 +255,8 @@ The authentication system includes:
 - Protected routes
 - Role-based access control with fine-grained permissions
 - Organization-based access control
+- Secure password storage with PBKDF2 and SHA-512 hashing
+- Unique salt for each password to prevent rainbow table attacks
 
 ## Admin Management System
 

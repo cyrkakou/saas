@@ -100,8 +100,8 @@ export const reports = sqliteTable('reports', {
 export const auditLogs = sqliteTable('audit_logs', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
-  action: text('action', { enum: Object.values(AuditAction) }).notNull(),
-  entityType: text('entity_type', { enum: Object.values(EntityType) }).notNull(),
+  action: text('action', { enum: Object.values(AuditAction) as [string, ...string[]] }).notNull(),
+  entityType: text('entity_type', { enum: Object.values(EntityType) as [string, ...string[]] }).notNull(),
   entityId: text('entity_id'),
   details: text('details'),
   ipAddress: text('ip_address'),

@@ -15,13 +15,13 @@ export async function GET(
   try {
     // Ensure database is initialized
     await initializeDatabase();
-    
+
     const { id } = params;
-    
+
     // Get repositories
     const userRepository = await getUserRepository();
     const reportRepository = await getReportRepository();
-    
+
     // Check if user exists
     const user = await userRepository.findById(id);
     if (!user) {
@@ -30,14 +30,14 @@ export async function GET(
         { status: 404 }
       );
     }
-    
+
     // Get reports created by the user
     const reports = await reportRepository.findByCreator(id);
-    
+
     return NextResponse.json(reports);
   } catch (error: any) {
     console.error(`Error fetching reports for user with ID '${params.id}':`, error);
-    
+
     return NextResponse.json(
       { error: error.message || 'An error occurred while fetching reports' },
       { status: 500 }
@@ -57,23 +57,23 @@ export async function POST(
   try {
     // Ensure database is initialized
     await initializeDatabase();
-    
+
     const { id } = params;
-    
+
     // Parse request body
     const body = await request.json();
-    
+
     // Validate request body
-    const schema = z.object({
+    const validationSchema = z.object({
       reportId: z.string(),
     });
-    
-    const { reportId } = schema.parse(body);
-    
+
+    const { reportId } = validationSchema.parse(body);
+
     // Get repositories
     const userRepository = await getUserRepository();
     const reportRepository = await getReportRepository();
-    
+
     // Check if user exists
     const user = await userRepository.findById(id);
     if (!user) {
@@ -82,7 +82,7 @@ export async function POST(
         { status: 404 }
       );
     }
-    
+
     // Check if report exists
     const report = await reportRepository.findById(reportId);
     if (!report) {
@@ -91,16 +91,37 @@ export async function POST(
         { status: 404 }
       );
     }
-    
-    // Update report to assign it to the user
+
+    // Since createdById is omitted from UpdateReportSchema, we need to use a workaround
+    // First, get the current report data
+    const currentReport = await reportRepository.findById(reportId);
+
+    // Then update with allowed fields
     const updatedReport = await reportRepository.update(reportId, {
-      createdById: id
+      name: currentReport?.name || '',
+      description: currentReport?.description,
+      type: currentReport?.type,
+      config: currentReport?.config || '{}',
+      organizationId: currentReport?.organizationId,
+      isPublic: currentReport?.isPublic
     });
-    
-    return NextResponse.json(updatedReport);
+
+    // Now manually update the database to set createdById
+    const db = await import('@/infrastructure/database/core/database-service').then(m => m.getDb());
+    const schema = await import('@/infrastructure/database/core/database-service').then(m => m.getSchema());
+    const { eq } = await import('drizzle-orm');
+
+    await db.update(schema.reports)
+      .set({ createdById: id })
+      .where(eq(schema.reports.id, reportId));
+
+    // Get the updated report
+    const finalReport = await reportRepository.findById(reportId);
+
+    return NextResponse.json(finalReport);
   } catch (error: any) {
     console.error(`Error assigning report to user with ID '${params.id}':`, error);
-    
+
     // Check if it's a validation error
     if (error.name === 'ZodError') {
       return NextResponse.json(
@@ -108,7 +129,7 @@ export async function POST(
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: error.message || 'An error occurred while assigning the report' },
       { status: 500 }

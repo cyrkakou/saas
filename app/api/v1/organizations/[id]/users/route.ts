@@ -15,13 +15,13 @@ export async function GET(
   try {
     // Ensure database is initialized
     await initializeDatabase();
-    
+
     const { id } = params;
-    
+
     // Get repositories
     const organizationRepository = await getOrganizationRepository();
     const userRepository = await getUserRepository();
-    
+
     // Check if organization exists
     const organization = await organizationRepository.findById(id);
     if (!organization) {
@@ -30,17 +30,17 @@ export async function GET(
         { status: 404 }
       );
     }
-    
+
     // Get all users
     const allUsers = await userRepository.findAll();
-    
+
     // Filter users by organization
     const organizationUsers = allUsers.filter(user => user.organizationId === id);
-    
+
     return NextResponse.json(organizationUsers);
   } catch (error: any) {
     console.error(`Error fetching users for organization with ID '${params.id}':`, error);
-    
+
     return NextResponse.json(
       { error: error.message || 'An error occurred while fetching users' },
       { status: 500 }
@@ -60,23 +60,23 @@ export async function POST(
   try {
     // Ensure database is initialized
     await initializeDatabase();
-    
+
     const { id } = params;
-    
+
     // Parse request body
     const body = await request.json();
-    
+
     // Validate request body
     const schema = z.object({
       userId: z.string(),
     });
-    
+
     const { userId } = schema.parse(body);
-    
+
     // Get repositories
     const organizationRepository = await getOrganizationRepository();
     const userRepository = await getUserRepository();
-    
+
     // Check if organization exists
     const organization = await organizationRepository.findById(id);
     if (!organization) {
@@ -85,7 +85,7 @@ export async function POST(
         { status: 404 }
       );
     }
-    
+
     // Check if user exists
     const user = await userRepository.findById(userId);
     if (!user) {
@@ -94,7 +94,7 @@ export async function POST(
         { status: 404 }
       );
     }
-    
+
     // Check if user is already in the organization
     if (user.organizationId === id) {
       return NextResponse.json(
@@ -102,16 +102,16 @@ export async function POST(
         { status: 409 }
       );
     }
-    
+
     // Update user to add them to the organization
     const updatedUser = await userRepository.update(userId, {
       organizationId: id
     });
-    
+
     return NextResponse.json(updatedUser);
   } catch (error: any) {
     console.error(`Error adding user to organization with ID '${params.id}':`, error);
-    
+
     // Check if it's a validation error
     if (error.name === 'ZodError') {
       return NextResponse.json(
@@ -119,7 +119,7 @@ export async function POST(
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: error.message || 'An error occurred while adding the user' },
       { status: 500 }
@@ -139,23 +139,23 @@ export async function DELETE(
   try {
     // Ensure database is initialized
     await initializeDatabase();
-    
+
     const { id } = params;
-    
+
     // Parse request body
     const body = await request.json();
-    
+
     // Validate request body
     const schema = z.object({
       userId: z.string(),
     });
-    
+
     const { userId } = schema.parse(body);
-    
+
     // Get repositories
     const organizationRepository = await getOrganizationRepository();
     const userRepository = await getUserRepository();
-    
+
     // Check if organization exists
     const organization = await organizationRepository.findById(id);
     if (!organization) {
@@ -164,7 +164,7 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    
+
     // Check if user exists
     const user = await userRepository.findById(userId);
     if (!user) {
@@ -173,7 +173,7 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    
+
     // Check if user is in the organization
     if (user.organizationId !== id) {
       return NextResponse.json(
@@ -181,16 +181,16 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    
+
     // Update user to remove them from the organization
     const updatedUser = await userRepository.update(userId, {
-      organizationId: null
+      organizationId: undefined
     });
-    
+
     return NextResponse.json(updatedUser);
   } catch (error: any) {
     console.error(`Error removing user from organization with ID '${params.id}':`, error);
-    
+
     // Check if it's a validation error
     if (error.name === 'ZodError') {
       return NextResponse.json(
@@ -198,7 +198,7 @@ export async function DELETE(
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: error.message || 'An error occurred while removing the user' },
       { status: 500 }

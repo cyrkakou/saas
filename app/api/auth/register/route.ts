@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateUserSchema } from '@/core/domain/entities/user';
 import { getUserRepository } from '@/infrastructure/database';
+import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,12 +21,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hash the password
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(validatedData.password, salt, 1000, 64, 'sha512').toString('hex');
+    const hashedPassword = `${salt}:${hash}`;
+
     // Create the user
     const user = await userRepository.create({
       email: validatedData.email,
       name: validatedData.name,
-      password: validatedData.password, // In a real app, you would hash this
-      role: 'user'
+      password: hashedPassword, // Securely hashed password
+      roleId: '1', // Assuming '1' is the ID for the 'user' role
+      isActive: true
     });
 
     // Return response without password

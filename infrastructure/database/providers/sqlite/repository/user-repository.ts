@@ -15,50 +15,74 @@ export class SQLiteUserRepository implements UserRepository {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const result = await db.select().from(schema.users).where(eq(schema.users.id, id)).limit(1);
-    return result.length > 0 ? result[0] : null;
+    return result.length > 0 ? result[0] as User : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const result = await db.select().from(schema.users).where(eq(schema.users.email, email)).limit(1);
-    return result.length > 0 ? result[0] : null;
+    return result.length > 0 ? result[0] as User : null;
   }
 
   async findAll(): Promise<User[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.users);
+    return await db.select().from(schema.users) as User[];
   }
 
   async create(data: CreateUserInput): Promise<User> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const now = new Date();
-    const result = await db.insert(schema.users).values({
+    // SQLite doesn't support returning, so we need to insert and then fetch
+    const id = createId();
+    await db.insert(schema.users).values({
       ...data,
-      id: createId(),
+      id,
       createdAt: now,
       updatedAt: now
-    }).returning();
-    return result[0];
+    });
+
+    // Return a basic User object
+    return {
+      ...data,
+      id,
+      createdAt: now,
+      updatedAt: now
+    } as User;
   }
 
   async update(id: string, data: UpdateUserInput): Promise<User> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    const result = await db
+    // SQLite doesn't support returning, so we need to update and then fetch
+    const now = new Date();
+    await db
       .update(schema.users)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(schema.users.id, id))
-      .returning();
-    return result[0];
+      .set({ ...data, updatedAt: now })
+      .where(eq(schema.users.id, id));
+
+    // Fetch the updated user
+    const result = await db.select().from(schema.users).where(eq(schema.users.id, id)).limit(1);
+    return result.length > 0 ? result[0] as User : {
+      ...data,
+      id,
+      updatedAt: now
+    } as User;
   }
 
   async delete(id: string): Promise<boolean> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    const result = await db.delete(schema.users).where(eq(schema.users.id, id)).returning();
-    return result.length > 0;
+    // SQLite doesn't support returning, so we need to check if the user exists first
+    const existingUser = await db.select().from(schema.users).where(eq(schema.users.id, id)).limit(1);
+    const exists = existingUser.length > 0;
+
+    // Delete the user
+    await db.delete(schema.users).where(eq(schema.users.id, id));
+
+    // Return true if the user existed before deletion
+    return exists;
   }
 }

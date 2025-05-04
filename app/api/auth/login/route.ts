@@ -29,8 +29,20 @@ export async function POST(request: NextRequest) {
     const user = await userRepository.findByEmail(email);
 
     // Check if user exists and password is correct
-    // In a real app, you would use a proper password hashing and comparison
-    if (!user || user.password !== password) {
+    // Verify the password using the stored salt and hash
+    let passwordIsValid = false;
+    if (user) {
+      // Split the stored password into salt and hash
+      const [salt, storedHash] = user.password.split(':');
+
+      // Hash the provided password with the same salt
+      const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+
+      // Compare the hashes
+      passwordIsValid = storedHash === hash;
+    }
+
+    if (!user || !passwordIsValid) {
       // Log failed login attempt
       await auditLogRepository.create({
         userId: user ? user.id : undefined,
@@ -64,7 +76,7 @@ export async function POST(request: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role
+      roleId: user.roleId
     });
 
     response.cookies.set('auth-token', 'true', {

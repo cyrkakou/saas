@@ -10,6 +10,11 @@ export {
   getUserRepository,
   getSubscriptionRepository,
   getAuditLogRepository,
+  getRoleRepository,
+  getPermissionRepository,
+  getOrganizationRepository,
+  getSettingRepository,
+  getReportRepository,
 } from './core/repository-factory';
 
 // Export database provider interfaces

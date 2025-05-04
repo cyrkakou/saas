@@ -39,7 +39,7 @@ export class DefaultAuthenticationService implements AuthenticationService {
         AuditAction.REGISTER,
         EntityType.USER,
         user.id,
-        { email: user.email, role: user.role },
+        { email: user.email, roleId: user.roleId },
         ipAddress
       );
     }

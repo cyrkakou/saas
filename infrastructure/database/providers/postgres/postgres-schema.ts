@@ -6,8 +6,8 @@ import { AuditAction, EntityType } from '@/core/domain/entities/audit-log';
 export const roleEnum = pgEnum('role', ['user', 'admin']);
 export const planEnum = pgEnum('plan', ['free', 'basic', 'premium']);
 export const statusEnum = pgEnum('status', ['active', 'canceled', 'expired']);
-export const actionEnum = pgEnum('action', Object.values(AuditAction));
-export const entityTypeEnum = pgEnum('entity_type', Object.values(EntityType));
+export const actionEnum = pgEnum('action', Object.values(AuditAction) as [string, ...string[]]);
+export const entityTypeEnum = pgEnum('entity_type', Object.values(EntityType) as [string, ...string[]]);
 
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => createId()),

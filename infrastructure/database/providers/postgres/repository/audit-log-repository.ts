@@ -15,19 +15,19 @@ export class PostgresAuditLogRepository implements AuditLogRepository {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const result = await db.select().from(schema.auditLogs).where(eq(schema.auditLogs.id, id)).limit(1);
-    return result.length > 0 ? result[0] : null;
+    return result.length > 0 ? result[0] as AuditLog : null;
   }
 
   async findByUserId(userId: string): Promise<AuditLog[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.auditLogs).where(eq(schema.auditLogs.userId, userId));
+    return await db.select().from(schema.auditLogs).where(eq(schema.auditLogs.userId, userId)) as AuditLog[];
   }
 
   async findByEntityId(entityId: string): Promise<AuditLog[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.auditLogs).where(eq(schema.auditLogs.entityId, entityId));
+    return await db.select().from(schema.auditLogs).where(eq(schema.auditLogs.entityId, entityId)) as AuditLog[];
   }
 
   async findAll(limit: number = 100, offset: number = 0): Promise<AuditLog[]> {
@@ -37,7 +37,7 @@ export class PostgresAuditLogRepository implements AuditLogRepository {
       .from(schema.auditLogs)
       .limit(limit)
       .offset(offset)
-      .orderBy(schema.auditLogs.createdAt);
+      .orderBy(schema.auditLogs.createdAt) as AuditLog[];
   }
 
   async create(data: CreateAuditLogInput): Promise<AuditLog> {
@@ -48,6 +48,6 @@ export class PostgresAuditLogRepository implements AuditLogRepository {
       id: createId(),
       createdAt: new Date()
     }).returning();
-    return result[0];
+    return result[0] as AuditLog;
   }
 }

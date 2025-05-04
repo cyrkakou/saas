@@ -15,67 +15,91 @@ export class SQLiteReportRepository implements ReportRepository {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const result = await db.select().from(schema.reports).where(eq(schema.reports.id, id)).limit(1);
-    return result.length > 0 ? result[0] : null;
+    return result.length > 0 ? result[0] as Report : null;
   }
 
   async findByType(type: ReportType): Promise<Report[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.reports).where(eq(schema.reports.type, type));
+    return await db.select().from(schema.reports).where(eq(schema.reports.type, type)) as Report[];
   }
 
   async findByOrganization(organizationId: string): Promise<Report[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.reports).where(eq(schema.reports.organizationId, organizationId));
+    return await db.select().from(schema.reports).where(eq(schema.reports.organizationId, organizationId)) as Report[];
   }
 
   async findByCreator(userId: string): Promise<Report[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.reports).where(eq(schema.reports.createdById, userId));
+    return await db.select().from(schema.reports).where(eq(schema.reports.createdById, userId)) as Report[];
   }
 
   async findAll(): Promise<Report[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.reports);
+    return await db.select().from(schema.reports) as Report[];
   }
 
   async findPublic(): Promise<Report[]> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    return await db.select().from(schema.reports).where(eq(schema.reports.isPublic, 1));
+    return await db.select().from(schema.reports).where(eq(schema.reports.isPublic, 1)) as Report[];
   }
 
   async create(data: CreateReportInput): Promise<Report> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
     const now = new Date();
-    const result = await db.insert(schema.reports).values({
+    // SQLite doesn't support returning, so we need to insert and then fetch
+    const id = createId();
+    await db.insert(schema.reports).values({
       ...data,
-      id: createId(),
+      id,
       createdAt: now,
       updatedAt: now
-    }).returning();
-    return result[0];
+    });
+
+    // Return a basic Report object
+    return {
+      ...data,
+      id,
+      createdAt: now,
+      updatedAt: now
+    } as Report;
   }
 
   async update(id: string, data: UpdateReportInput): Promise<Report> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    const result = await db
+    // SQLite doesn't support returning, so we need to update and then fetch
+    const now = new Date();
+    await db
       .update(schema.reports)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(schema.reports.id, id))
-      .returning();
-    return result[0];
+      .set({ ...data, updatedAt: now })
+      .where(eq(schema.reports.id, id));
+
+    // Fetch the updated report
+    const result = await db.select().from(schema.reports).where(eq(schema.reports.id, id)).limit(1);
+    return result.length > 0 ? result[0] as Report : {
+      ...data,
+      id,
+      updatedAt: now
+    } as Report;
   }
 
   async delete(id: string): Promise<boolean> {
     const db = this.provider.getDb();
     const schema = this.provider.getSchema();
-    const result = await db.delete(schema.reports).where(eq(schema.reports.id, id)).returning();
-    return result.length > 0;
+    // SQLite doesn't support returning, so we need to check if the report exists first
+    const existingReport = await db.select().from(schema.reports).where(eq(schema.reports.id, id)).limit(1);
+    const exists = existingReport.length > 0;
+
+    // Delete the report
+    await db.delete(schema.reports).where(eq(schema.reports.id, id));
+
+    // Return true if the report existed before deletion
+    return exists;
   }
 }

@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from '@/presentation/components/ui/popover'
 import { Calendar as CalendarComponent } from '@/presentation/components/ui/calendar'
+import { DateRange } from 'react-day-picker'
 
 interface DateRangeSelectorProps {
   className?: string
@@ -18,19 +19,16 @@ interface DateRangeSelectorProps {
 }
 
 export function DateRangeSelector({ className, onRangeChange }: DateRangeSelectorProps) {
-  const [date, setDate] = useState<{
-    from: Date
-    to: Date
-  }>({
+  const [date, setDate] = useState<DateRange>({
     from: new Date(2023, 0, 1),
     to: new Date(),
   })
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleSelect = (range: { from: Date; to: Date }) => {
-    setDate(range)
-    if (range.from && range.to) {
-      onRangeChange?.(range)
+  const handleSelect = (range: DateRange | undefined) => {
+    if (range && range.from && range.to) {
+      setDate(range)
+      onRangeChange?.({ from: range.from, to: range.to })
     }
   }
 
@@ -75,7 +73,7 @@ export function DateRangeSelector({ className, onRangeChange }: DateRangeSelecto
         </PopoverContent>
       </Popover>
       <div className="text-xs text-gray-500 mt-1">
-        or {format(date.from, "M/d/yyyy")} - {format(date.to, "M/d/yyyy")}
+        or {date.from && format(date.from, "M/d/yyyy")} - {date.to && format(date.to, "M/d/yyyy")}
       </div>
     </div>
   )
