@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
 import {
   Card,
   CardContent,
@@ -235,7 +236,7 @@ export default function PermissionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+      <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Permissions</h1>
         <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
@@ -469,6 +470,6 @@ export default function PermissionsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
   )
 }

@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Search, 
-  Filter, 
-  UserPlus, 
+import {
+  Search,
+  Filter,
+  UserPlus,
   MoreHorizontal,
   Mail,
   Phone,
   Calendar
 } from 'lucide-react'
-import { AdminLayout } from '@/presentation/components/admin/layout'
+
 import { Button } from '@/presentation/components/ui/button'
 import { Input } from '@/presentation/components/ui/input'
 import {
@@ -103,18 +103,17 @@ export default function UsersPage() {
   const [statusFilter, setStatusFilter] = useState('all')
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = 
+    const matchesSearch =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter
     const matchesStatus = statusFilter === 'all' || user.status.toLowerCase() === statusFilter
-    
+
     return matchesSearch && matchesRole && matchesStatus
   })
 
   return (
-    <AdminLayout>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           <h1 className="text-2xl font-bold mb-4 sm:mb-0">Users</h1>
@@ -123,7 +122,7 @@ export default function UsersPage() {
             Add User
           </Button>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
@@ -147,7 +146,7 @@ export default function UsersPage() {
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[130px]">
                   <SelectValue placeholder="Status" />
@@ -158,13 +157,13 @@ export default function UsersPage() {
                   <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -193,8 +192,8 @@ export default function UsersPage() {
                     </TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        user.role === 'Admin' 
-                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' 
+                        user.role === 'Admin'
+                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
                           : user.role === 'Editor'
                           ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
                           : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
@@ -204,8 +203,8 @@ export default function UsersPage() {
                     </TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        user.status === 'Active' 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                        user.status === 'Active'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                       }`}>
                         {user.status}
@@ -246,6 +245,6 @@ export default function UsersPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+
   )
 }

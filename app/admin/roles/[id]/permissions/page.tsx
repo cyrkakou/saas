@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
 import {
   Card,
   CardContent,
@@ -197,7 +198,7 @@ export default function RolePermissionsPage({ params }: { params: { id: string }
   }
 
   return (
-    <div className="space-y-6">
+      <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => router.push('/admin/roles')}>
           <ArrowLeft className="h-4 w-4" />
@@ -332,6 +333,6 @@ export default function RolePermissionsPage({ params }: { params: { id: string }
           </Card>
         </>
       )}
-    </div>
+      </div>
   )
 }

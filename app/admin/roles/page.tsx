@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
 import {
   Card,
   CardContent,
@@ -214,7 +215,7 @@ export default function RolesPage() {
   }
 
   return (
-    <div className="space-y-6">
+      <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Roles</h1>
         <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
@@ -396,6 +397,6 @@ export default function RolesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
   )
 }
